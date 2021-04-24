@@ -1,4 +1,4 @@
-package org.tutorial.exception;
+package org.tutorial.hello.exception;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;

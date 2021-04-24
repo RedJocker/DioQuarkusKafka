@@ -1,7 +1,7 @@
-package org.tutorial.resource;
+package org.tutorial.pojo.resource;
 
-import org.tutorial.entity.GreetingEntity;
-
+import org.tutorial.hello.entity.GreetingEntity;
+import org.tutorial.pojo.entity.PojoEntity;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -15,52 +15,41 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
 
-
-
-@Path("/hello")
-public class GreetingResource {
-
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String hello() {
-        return "Hello";
-    }
-
+@Path("/pojo")
+public class PojoResource {
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getMessageById(@PathParam("id") Long id) {
-        final Optional<GreetingEntity> found = GreetingEntity.findByIdOptional(id);
-
-        return found.map( entity -> entity.message).orElse("Hello default");
-
+    public Response getMessageById(@PathParam("id") Long id) {
+        return PojoEntity.findByIdOptional(id)
+                .map(entity -> Response.status(201).entity(entity).build())
+                .orElseThrow(NotFoundException::new);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response save(@Valid GreetingEntity greetingEntity) throws URISyntaxException {
-        greetingEntity.persist();
+    public Response save(@Valid PojoEntity pojoEntity) throws URISyntaxException {
+        pojoEntity.persist();
 
         final Map<String, Object> responseMessage = Map.of(
-                "savedMessage", greetingEntity
+                "savedPojo", pojoEntity
         );
 
         return Response.ok(responseMessage).build();
     }
 
     @GET
-    @Path("/allMessages")
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll(){
-        final var response = Map.of("list of messages", GreetingEntity.listAll());
+        final var response = Map.of("list of pojos", PojoEntity.listAll());
         return Response.ok(response).build();
     }
 
@@ -69,8 +58,8 @@ public class GreetingResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response deleteById(@PathParam("id") Long id) {
-        final Optional<GreetingEntity> entity = GreetingEntity.findByIdOptional(id);
-        entity.ifPresent(GreetingEntity::delete);
+        final Optional<PojoEntity> entity = GreetingEntity.findByIdOptional(id);
+        entity.ifPresent(PojoEntity::delete);
 
 
         final Map<String, Object> response = entity.map(e -> Map.of("deleted", (Object) e))
@@ -79,8 +68,4 @@ public class GreetingResource {
         return Response.ok(response).build();
 
     }
-
-
-
-
 }
