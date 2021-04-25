@@ -56,7 +56,17 @@
     - written application.properties
     - ran dev.sh
         - server started normally
-<br>
+<br> 
+
+- consume transaction event
+    - written Transaction entity on balance-service
+    - written IncomeTransactionEvent
+        - @Produces Topology
+    - written TransactionConsumer
+        - @ConsumeEvent
+    - receives events produced by transaction-service
+        - corrently only prints the transaction
+
     
 
 
