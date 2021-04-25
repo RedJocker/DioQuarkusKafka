@@ -1,8 +1,13 @@
 package transaction.resource;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import transaction.entity.Transaction;
 
+
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import transaction.entity.Transaction;
+import transaction.producer.ProducerTransactionEvent;
+
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -22,6 +27,15 @@ import java.util.Optional;
 @Path("/")
 public class ResourceTransaction {
 
+    private final Emitter<Transaction> emitter;
+
+    @Inject
+    public ResourceTransaction(
+            @Channel(ProducerTransactionEvent.transactionEvent) Emitter<Transaction> emitter
+    ) {
+        this.emitter = emitter;
+    }
+
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -37,9 +51,8 @@ public class ResourceTransaction {
 
         return found
                 .map(transaction -> Response.ok(Map.of("found", transaction)).build())
-                .orElseThrow( () -> new NotFoundException("id not found " +  id));
+                .orElseThrow(() -> new NotFoundException("id not found " +  id));
     }
-
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -48,6 +61,8 @@ public class ResourceTransaction {
     public Response save(Transaction transaction) {
 
         transaction.persist();
+
+        emitter.send(transaction);
 
         final URI uri = URI.create("/transactions/" + transaction.id);
         final Map<String, Object> response = Map.of(
