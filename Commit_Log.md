@@ -1,0 +1,10 @@
+- create quarkus project
+    - written createQuarkus.sh
+    - ran createQuarkus.sh
+        - default restEasy
+        - empty project
+        - artifact: transaction service
+    - written initialDependencies.sh
+    - ran initialDependiencies.sh
+    - written docker-compose.yml
+    - written root .gitignore
