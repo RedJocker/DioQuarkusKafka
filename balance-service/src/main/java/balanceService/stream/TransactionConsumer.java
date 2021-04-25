@@ -15,7 +15,7 @@ public class TransactionConsumer {
 
     @ConsumeEvent(blocking = true)
     public void consume(Transaction transaction) {
-        System.out.println(transaction);
+        log.info(transaction.toString());
 
     }
 
