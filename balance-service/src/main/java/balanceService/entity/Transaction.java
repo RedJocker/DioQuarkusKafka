@@ -25,6 +25,8 @@ public class Transaction {
         return transactionType.isIncome();
     }
 
+    public boolean isExpense() {return transactionType.isExpense();}
+
     public String getAccountId() {
         return accountId;
     }

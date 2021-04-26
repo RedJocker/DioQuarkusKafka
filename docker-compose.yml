@@ -13,9 +13,12 @@ services:
 
     mongodb-service:
         container_name: bankaccount-mongo
+        image: mongo
         ports: 
             - "27017:27017"
-        image: mongo
+        environment:
+            - MONGODB_REPLICA_SET_MODE=primary
+        entrypoint: [ "/usr/bin/mongod", "--port", "27017" , "--replSet", "rs0", "--bind_ip_all" ]
 
     zookeeper:
         container_name: bankaccount-zookeeper
